@@ -776,6 +776,24 @@ parent chart.
 
 Also, global variables of parent charts take precedence over the global variables from subcharts.
 
+### Templated Values
+
+Values can be composed using other values, via a custom `tval` function. 
+Since all files must be comprised of valid YAML, all such values are composed
+within YAML strings. For example:
+
+```yaml
+a: helm
+b: '{{ tval "a" }} rocks!'
+```
+
+If you wish to make use of templated values, you must pass the `--expand-values`
+flag when you run `helm install` or `helm upgrade`.
+
+Note that the `tval` function is not available in any other context. Also, 
+values used for [requirement conditions](#tags-and-condition-fields-in-requirementsyaml)
+cannot be templated.
+
 ### References
 
 When it comes to writing templates and values files, there are several
