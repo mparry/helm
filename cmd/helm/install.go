@@ -229,7 +229,7 @@ func (i *installCmd) run() error {
 	}
 
 	if req, err := chartutil.LoadRequirements(chartRequested); err == nil {
-		// If checkDependencies returns an error, we have unfullfilled dependencies.
+		// If checkDependencies returns an error, we have unfulfilled dependencies.
 		// As of Helm 2.4.0, this is treated as a stopping condition:
 		// https://github.com/kubernetes/helm/issues/2209
 		if err := checkDependencies(chartRequested, req); err != nil {
@@ -272,7 +272,7 @@ func (i *installCmd) run() error {
 	if rel == nil {
 		return nil
 	}
-	i.printRelease(rel)
+	i.printRelease(rel, res.GetFinalValues())
 
 	// If this is a dry run, we can't display status.
 	if i.dryRun {
@@ -359,14 +359,14 @@ func vals(valueFiles valueFiles, values []string) ([]byte, error) {
 }
 
 // printRelease prints info about a release if the Debug is true.
-func (i *installCmd) printRelease(rel *release.Release) {
+func (i *installCmd) printRelease(rel *release.Release, finalVals *chart.Config) {
 	if rel == nil {
 		return
 	}
 	// TODO: Switch to text/template like everything else.
 	fmt.Fprintf(i.out, "NAME:   %s\n", rel.Name)
 	if settings.Debug {
-		printRelease(i.out, rel)
+		printRelease(i.out, rel, finalVals)
 	}
 }
 
@@ -496,7 +496,6 @@ func readFile(filePath string) ([]byte, error) {
 
 	// FIXME: maybe someone handle other protocols like ftp.
 	getterConstructor, err := p.ByScheme(u.Scheme)
-
 	if err != nil {
 		return ioutil.ReadFile(filePath)
 	}
