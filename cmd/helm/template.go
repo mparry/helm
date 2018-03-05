@@ -74,6 +74,7 @@ type templateCmd struct {
 	renderFiles  []string
 	kubeVersion  string
 	outputDir    string
+	expandVals   bool
 }
 
 func newTemplateCmd(out io.Writer) *cobra.Command {
@@ -99,6 +100,7 @@ func newTemplateCmd(out io.Writer) *cobra.Command {
 	f.StringVar(&t.nameTemplate, "name-template", "", "specify template used to name the release")
 	f.StringVar(&t.kubeVersion, "kube-version", defaultKubeVersion, "kubernetes version used as Capabilities.KubeVersion.Major/Minor")
 	f.StringVar(&t.outputDir, "output-dir", "", "writes the executed templates to files in output-dir instead of stdout")
+	f.BoolVar(&t.expandVals, "expand-values", false, "expand any templates found in the values.")
 
 	return cmd
 }
@@ -214,6 +216,12 @@ func (t *templateCmd) run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if t.expandVals {
+		if vals, err = renderer.ExpandValues(vals); err != nil {
+			return err
+		}
+	}
+
 	out, err := renderer.Render(c, vals)
 	listManifests := []tiller.Manifest{}
 	if err != nil {
@@ -252,7 +260,11 @@ func (t *templateCmd) run(cmd *cobra.Command, args []string) error {
 			Namespace: t.namespace,
 			Info:      &release.Info{LastDeployed: timeconv.Timestamp(time.Now())},
 		}
-		printRelease(os.Stdout, rel)
+		valsYaml, err := vals.YAML()
+		if err != nil {
+			return err
+		}
+		printRelease(os.Stdout, rel, &chart.Config{Raw: valsYaml})
 	}
 
 	for _, m := range tiller.SortByKind(listManifests) {

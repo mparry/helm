@@ -40,6 +40,7 @@ helm upgrade [RELEASE] [CHART]
       --cert-file string     identify HTTPS client using this SSL certificate file
       --devel                use development versions, too. Equivalent to version '>0.0.0-0'. If --version is set, this is ignored.
       --dry-run              simulate an upgrade
+      --expand-values        expand any templates found in the values.
       --force                force resource update through delete/recreate if needed
   -i, --install              if a release by this name doesn't already exist, run an install
       --key-file string      identify HTTPS client using this SSL key file

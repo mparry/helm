@@ -74,6 +74,7 @@ helm install [CHART]
       --dep-up                 run helm dependency update before installing the chart
       --devel                  use development versions, too. Equivalent to version '>0.0.0-0'. If --version is set, this is ignored.
       --dry-run                simulate an install
+      --expand-values          expand any templates found in the values.
       --key-file string        identify HTTPS client using this SSL key file
       --keyring string         location of public keys used for verification (default "~/.gnupg/pubring.gpg")
   -n, --name string            release name. If unspecified, it will autogenerate one for you

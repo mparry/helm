@@ -74,6 +74,7 @@ type upgradeCmd struct {
 	wait         bool
 	repoURL      string
 	devel        bool
+	expandVals   bool
 
 	certFile string
 	keyFile  string
@@ -132,6 +133,7 @@ func newUpgradeCmd(client helm.Interface, out io.Writer) *cobra.Command {
 	f.StringVar(&upgrade.keyFile, "key-file", "", "identify HTTPS client using this SSL key file")
 	f.StringVar(&upgrade.caFile, "ca-file", "", "verify certificates of HTTPS-enabled servers using this CA bundle")
 	f.BoolVar(&upgrade.devel, "devel", false, "use development versions, too. Equivalent to version '>0.0.0-0'. If --version is set, this is ignored.")
+	f.BoolVar(&upgrade.expandVals, "expand-values", false, "expand any templates found in the values.")
 
 	f.MarkDeprecated("disable-hooks", "use --no-hooks instead")
 
@@ -182,6 +184,7 @@ func (u *upgradeCmd) run() error {
 				namespace:    u.namespace,
 				timeout:      u.timeout,
 				wait:         u.wait,
+				expandVals:   u.expandVals,
 			}
 			return ic.run()
 		}
@@ -216,13 +219,14 @@ func (u *upgradeCmd) run() error {
 		helm.UpgradeTimeout(u.timeout),
 		helm.ResetValues(u.resetValues),
 		helm.ReuseValues(u.reuseValues),
-		helm.UpgradeWait(u.wait))
+		helm.UpgradeWait(u.wait),
+		helm.UpgradeExpandValues(u.expandVals))
 	if err != nil {
 		return fmt.Errorf("UPGRADE FAILED: %v", prettyError(err))
 	}
 
 	if settings.Debug {
-		printRelease(u.out, resp.Release)
+		printRelease(u.out, resp.Release, resp.GetFinalValues())
 	}
 
 	fmt.Fprintf(u.out, "Release %q has been upgraded. Happy Helming!\n", u.release)

@@ -26,6 +26,7 @@ helm template [flags] CHART
 
 ```
   -x, --execute stringArray    only execute the given templates
+      --expand-values          expand any templates found in the values.
       --kube-version string    kubernetes version used as Capabilities.KubeVersion.Major/Minor (default "1.9")
   -n, --name string            release name (default "RELEASE-NAME")
       --name-template string   specify template used to name the release

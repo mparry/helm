@@ -222,6 +222,20 @@ func RollbackTimeout(timeout int64) RollbackOption {
 	}
 }
 
+// InstallExpandValues specifies whether or not to expand templates in values
+func InstallExpandValues(expand bool) InstallOption {
+	return func(opts *options) {
+		opts.instReq.ExpandValues = expand
+	}
+}
+
+// UpgradeExpandValues specifies whether or not to expand templates in values
+func UpgradeExpandValues(expand bool) UpdateOption {
+	return func(opts *options) {
+		opts.updateReq.ExpandValues = expand
+	}
+}
+
 // InstallWait specifies whether or not to wait for all resources to be ready
 func InstallWait(wait bool) InstallOption {
 	return func(opts *options) {

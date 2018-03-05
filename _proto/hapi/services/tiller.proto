@@ -209,11 +209,14 @@ message UpdateReleaseRequest {
 	bool reuse_values = 10;
 	// Force resource update through delete/recreate if needed.
 	bool force = 11;
+	// Expand any templates found in values.
+	bool expand_values = 12;
 }
 
 // UpdateReleaseResponse is the response to an update request.
 message UpdateReleaseResponse {
 	hapi.release.Release release = 1;
+	hapi.chart.Config final_values = 2;
 }
 
 message RollbackReleaseRequest {
@@ -271,11 +274,15 @@ message InstallReleaseRequest {
 	// wait, if true, will wait until all Pods, PVCs, and Services are in a ready state
 	// before marking the release as successful. It will wait for as long as timeout
 	bool wait = 9;
+
+	// Expand any templates found in values.
+	bool expand_values = 10;
 }
 
 // InstallReleaseResponse is the response from a release installation.
 message InstallReleaseResponse {
 	hapi.release.Release release = 1;
+	hapi.chart.Config final_values = 2;
 }
 
 // UninstallReleaseRequest represents a request to uninstall a named release.
