@@ -214,6 +214,12 @@ func (t *templateCmd) run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if c.Metadata.ExpandValues {
+		if vals, err = renderer.ExpandValues(vals); err != nil {
+			return err
+		}
+	}
+
 	out, err := renderer.Render(c, vals)
 	listManifests := []tiller.Manifest{}
 	if err != nil {
@@ -252,7 +258,11 @@ func (t *templateCmd) run(cmd *cobra.Command, args []string) error {
 			Namespace: t.namespace,
 			Info:      &release.Info{LastDeployed: timeconv.Timestamp(time.Now())},
 		}
-		printRelease(os.Stdout, rel)
+		valsYaml, err := vals.YAML()
+		if err != nil {
+			return err
+		}
+		printRelease(os.Stdout, rel, &chart.Config{Raw: valsYaml})
 	}
 
 	for _, m := range tiller.SortByKind(listManifests) {
